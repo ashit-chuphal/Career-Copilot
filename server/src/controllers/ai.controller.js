@@ -1,4 +1,5 @@
-import { extractText, getDocumentProxy } from "unpdf";
+import fs from "fs";
+import * as pdfjsLib from "pdfjs-dist/legacy/build/pdf.mjs";
 import { analyzeRoleFit } from "../services/ai.services.js";
 import { PrismaClient } from "@prisma/client";
 
@@ -66,55 +67,60 @@ export const analyze = async (req, res) => {
 
 // This function extracts text from the uploaded resume and basic contact info
 export const parseResume = async (req, res) => {
-
   try {
+    if (!req.file) {
+      return res.status(400).json({
+        message: "No resume uploaded",
+      });
+    }
 
-    const pdf = await getDocumentProxy(
-      new Uint8Array(req.file.buffer)
-    );
+    const data = new Uint8Array(fs.readFileSync(req.file.path));
 
-    const { text } = await extractText(pdf, { mergePages: true });
+    const pdf = await pdfjsLib.getDocument({ data }).promise;
 
-    const resumeText = text.replace(/\n/g, " ");
+    let text = "";
 
-    // Basic email extraction
-    const emailMatch = resumeText.match(
+    for (let pageNum = 1; pageNum <= pdf.numPages; pageNum++) {
+      const page = await pdf.getPage(pageNum);
+      const content = await page.getTextContent();
+
+      const pageText = content.items
+        .map((item) => item.str)
+        .join(" ");
+
+      text += pageText + "\n";
+    }
+
+    // Extract email
+    const emailMatch = text.match(
       /[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}/i
     );
 
-    const email = emailMatch ? emailMatch[0] : "";
+    // Try to detect name from first line
+    const lines = text
+      .split("\n")
+      .map((line) => line.trim())
+      .filter(Boolean);
 
-    // Basic name extraction (first line usually name)
-    const nameMatch = resumeText.split("\n")[0];
+    const possibleName = lines[0]?.split(" ") || [];
 
-    let firstName = "";
-    let lastName = "";
+    const firstName = possibleName[0] || "";
+    const lastName = possibleName.slice(1).join(" ") || "";
 
-    if (nameMatch) {
-
-      const parts = nameMatch.trim().split(" ");
-
-      firstName = parts[0] || "";
-      lastName = parts[1] || "";
-
-    }
-
-    res.json({
+    return res.status(200).json({
       firstName,
       lastName,
-      email
+      email: emailMatch?.[0] || "",
+      text,
     });
-
   } catch (error) {
+    console.error("Resume parsing error:", error);
 
-    console.error(error);
-
-    res.status(500).json({
-      error: "Failed to parse resume"
+    return res.status(500).json({
+      message: "Failed to parse resume",
+      error: error.message,
     });
-
   }
-
 };
 
 
