@@ -16,101 +16,58 @@ const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
 });
 
-export const analyzeRoleFit = async (profile, jobDescription) => {
-
+export const analyzeRoleFit = async (resumeText, jobDescription) => {
   const prompt = `
-    You are a senior technical recruiter and career advisor.
+You are an expert ATS system and technical recruiter.
 
-    Your job is to deeply analyze how well a candidate’s resume matches a job description.
+Compare the following resume and job description.
 
-    Perform a thorough evaluation using the following factors:
+Return ONLY valid JSON.
 
-    1. Technical skills match
-    2. Years of experience alignment
-    3. Relevant technologies and tools
-    4. Architecture or system design experience
-    5. Industry/domain alignment
-    6. Seniority level alignment
-    7. Missing or weak skill areas
+{
+  "fitScore": number (0-100),
+  "matchingSkills": string[],
+  "missingSkills": string[],
+  "riskFactors": string[],
+  "advice": string,
+  "interviewQuestions": string[]
+}
 
-    Use the scoring rubric below to calculate a Fit Score from 0-100:
+RULES:
+- Always return valid JSON
+- No explanations outside JSON
+- At least 3 matching + 3 missing skills
+- Fit score must be realistic
 
-    90-100 → Excellent match (candidate strongly fits the role)  
-    70-89 → Strong match (minor skill gaps)  
-    50-69 → Moderate match (multiple missing skills but relevant background)  
-    30-49 → Weak match (limited alignment)  
-    0-29 → Poor match (major mismatch)
+RESUME:
+${resumeText}
 
-    Important instructions:
+JOB DESCRIPTION:
+${jobDescription}
+`;
 
-    - Identify ALL relevant skills from the resume that match the job description
-    - Identify ALL important skills that are missing
-    - Provide multiple risk factors if applicable
-    - Provide detailed and actionable career advice
-    - Generate realistic interview questions related to the role
+  const response = await openai.chat.completions.create({
+    model: "gpt-4o-mini",
+    messages: [{ role: "user", content: prompt }],
+    temperature: 0.3,
+  });
 
-    Return ONLY valid JSON.
-    Do NOT include markdown or code blocks.
+  let result;
 
-    Return the response in this exact format:
+  try {
+    result = JSON.parse(response.choices[0].message.content);
+  } catch (err) {
+    console.error("JSON parse error:", err);
 
-    {
-      "fitScore": number,
+    result = {
+      fitScore: 50,
+      matchingSkills: [],
+      missingSkills: [],
+      riskFactors: ["Parsing failed"],
+      advice: "Try again",
+      interviewQuestions: [],
+    };
+  }
 
-      "matchingSkills": [
-        "list of matching technical skills",
-        "include tools, frameworks, and technologies"
-      ],
-
-      "missingSkills": [
-        "important missing technical skills",
-        "technologies required but not present"
-      ],
-
-      "riskFactors": [
-        "experience gaps",
-        "seniority mismatch",
-        "technology stack gaps"
-      ],
-
-      "advice": "Provide a detailed paragraph explaining how the candidate can improve alignment with this role. Mention specific skills, technologies, or experiences they should gain.",
-
-      "interviewQuestions": [
-        "role-specific technical interview questions",
-        "system design questions",
-        "practical scenario questions"
-      ],
-
-      "skillBreakdown": {
-        "backend": [],
-        "cloud": [],
-        "devops": [],
-        "databases": [],
-        "architecture": []
-      },
-
-      "experienceAssessment": "Explain how the candidate's experience compares with the role requirements.",
-
-      "learningRecommendations": [
-        "specific technologies to learn",
-        "certifications or tools to explore",
-        "practical projects to build"
-      ]
-    }
-
-    Candidate Resume:
-    ${profile}
-
-    Job Description:
-    ${jobDescription}
-  `;
-
-    const response = await openai.chat.completions.create({
-      model: "gpt-4o-mini",
-      temperature: 0,
-      max_tokens: 1200,
-      messages: [{ role: "user", content: prompt }]
-    });
-    
-    return response.choices[0].message.content;
+  return result;
 };

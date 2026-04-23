@@ -1,144 +1,62 @@
-import { extractText, getDocumentProxy } from "unpdf";
+import fs from "fs";
+import * as pdfjsLib from "pdfjs-dist/legacy/build/pdf.mjs";
 import { analyzeRoleFit } from "../services/ai.services.js";
 import { PrismaClient } from "@prisma/client";
 
 const prisma = new PrismaClient();
 
+/* ANALYZE */
 export const analyze = async (req, res) => {
   try {
+    const { jobDescription } = req.body;
+    const userEmail = req.user?.email;
 
-    const { firstName, lastName, email, jobDescription } = req.body;
-
-    // Validate required fields
-    if (!firstName || !lastName || !email || !jobDescription) {
-      return res.status(400).json({ error: "Missing required fields" });
+    if (!userEmail || !jobDescription || !req.file) {
+      return res.status(400).json({ error: "Missing fields" });
     }
 
-    let profileText = "";
+    const data = new Uint8Array(fs.readFileSync(req.file.path));
+    const pdf = await pdfjsLib.getDocument({ data }).promise;
 
-    // Parse uploaded PDF
-    if (req.file) {
+    let text = "";
 
-      const pdf = await getDocumentProxy(
-        new Uint8Array(req.file.buffer)
-      );
-
-      const { text } = await extractText(pdf, { mergePages: true });
-
-      profileText = text
-        .replace(/\n/g, " ")
-        .replace(/\s+/g, " ")
-        .trim();
+    for (let i = 1; i <= pdf.numPages; i++) {
+      const page = await pdf.getPage(i);
+      const content = await page.getTextContent();
+      text += content.items.map(i => i.str).join(" ");
     }
 
-    if (!profileText) {
-      return res.status(400).json({ error: "Resume file is required" });
-    }
+    const result = await analyzeRoleFit(text, jobDescription);
 
-    // Run AI analysis
-    const result = await analyzeRoleFit(profileText, jobDescription);
-
-    // Create or update user
-    await prisma.user.upsert({
-      where: { email },
-      update: {},
-      create: { email, firstName, lastName }
-    });
-
-    // Save analysis
     await prisma.analysis.create({
       data: {
-        userEmail: email,
+        userEmail,
         jobDescription,
-        result: result
-      }
+        result,
+      },
     });
 
     res.json(result);
 
-  } catch (error) {
-
-    console.error(error);
+  } catch (err) {
+    console.error(err);
     res.status(500).json({ error: "Analysis failed" });
-
   }
 };
 
-// This function extracts text from the uploaded resume and basic contact info
-export const parseResume = async (req, res) => {
-
-  try {
-
-    const pdf = await getDocumentProxy(
-      new Uint8Array(req.file.buffer)
-    );
-
-    const { text } = await extractText(pdf, { mergePages: true });
-
-    const resumeText = text.replace(/\n/g, " ");
-
-    // Basic email extraction
-    const emailMatch = resumeText.match(
-      /[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}/i
-    );
-
-    const email = emailMatch ? emailMatch[0] : "";
-
-    // Basic name extraction (first line usually name)
-    const nameMatch = resumeText.split("\n")[0];
-
-    let firstName = "";
-    let lastName = "";
-
-    if (nameMatch) {
-
-      const parts = nameMatch.trim().split(" ");
-
-      firstName = parts[0] || "";
-      lastName = parts[1] || "";
-
-    }
-
-    res.json({
-      firstName,
-      lastName,
-      email
-    });
-
-  } catch (error) {
-
-    console.error(error);
-
-    res.status(500).json({
-      error: "Failed to parse resume"
-    });
-
-  }
-
-};
-
-
+/* HISTORY */
 export const getHistory = async (req, res) => {
-
   try {
+    const userEmail = req.user?.email;
 
-    const { email } = req.query;
-
-    if (!email) {
-      return res.status(400).json({ error: "Email required" });
-    }
-
-    const history = await prisma.analysis.findMany({
-      where: { userEmail: email },
-      orderBy: { createdAt: "desc" }
+    const data = await prisma.analysis.findMany({
+      where: { userEmail },
+      orderBy: { createdAt: "desc" },
     });
 
-    res.json(history);
+    res.json(data);
 
-  } catch (error) {
-
-    console.error(error);
+  } catch (err) {
     res.status(500).json({ error: "Failed to fetch history" });
-
   }
 };
