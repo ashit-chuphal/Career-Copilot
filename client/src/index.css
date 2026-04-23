@@ -1,3 +1,175 @@
+@import url('https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Sora:wght@400;600;700;800&display=swap');
+
 @import 'tailwindcss/base';
 @import 'tailwindcss/components';
 @import 'tailwindcss/utilities';
+
+:root {
+  color: #e2e8f0;
+  background:
+    radial-gradient(circle at top left, rgba(45, 212, 191, 0.16), transparent 28%),
+    radial-gradient(circle at bottom right, rgba(251, 113, 133, 0.12), transparent 24%),
+    #06111c;
+  font-family: "Manrope", sans-serif;
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  min-height: 100%;
+  scroll-behavior: smooth;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  background:
+    radial-gradient(circle at top left, rgba(45, 212, 191, 0.16), transparent 28%),
+    radial-gradient(circle at bottom right, rgba(251, 113, 133, 0.12), transparent 24%),
+    #06111c;
+}
+
+button,
+input,
+textarea,
+select {
+  font: inherit;
+}
+
+#root {
+  min-height: 100vh;
+}
+
+::selection {
+  background: rgba(45, 212, 191, 0.28);
+  color: #f8fafc;
+}
+
+.career-auth-shell {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  background:
+    radial-gradient(circle at 15% 20%, rgba(45, 212, 191, 0.16), transparent 24%),
+    radial-gradient(circle at 85% 25%, rgba(251, 113, 133, 0.16), transparent 22%),
+    linear-gradient(135deg, #04101b 0%, #082032 42%, #04101a 100%);
+}
+
+.career-auth-shell::before {
+  content: "";
+  position: absolute;
+  inset: -22%;
+  background:
+    conic-gradient(
+      from 110deg,
+      rgba(56, 189, 248, 0.14),
+      rgba(34, 197, 94, 0.06),
+      rgba(251, 113, 133, 0.14),
+      rgba(56, 189, 248, 0.14)
+    );
+  filter: blur(120px);
+  animation: drift 16s linear infinite;
+  opacity: 0.6;
+}
+
+.career-auth-shell::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background-image:
+    linear-gradient(rgba(255, 255, 255, 0.035) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.035) 1px, transparent 1px);
+  background-size: 42px 42px;
+  mask-image: radial-gradient(circle at center, black 45%, transparent 100%);
+  opacity: 0.42;
+  pointer-events: none;
+}
+
+.glass-panel {
+  background: linear-gradient(
+    180deg,
+    rgba(12, 23, 36, 0.88) 0%,
+    rgba(7, 15, 27, 0.72) 100%
+  );
+  backdrop-filter: blur(24px);
+  box-shadow:
+    0 24px 80px rgba(3, 8, 16, 0.48),
+    inset 0 1px 0 rgba(255, 255, 255, 0.08);
+}
+
+.auth-glow {
+  position: relative;
+}
+
+.auth-glow::after {
+  content: "";
+  position: absolute;
+  inset: 18% auto auto 8%;
+  width: 180px;
+  height: 180px;
+  border-radius: 9999px;
+  background: rgba(45, 212, 191, 0.16);
+  filter: blur(80px);
+  pointer-events: none;
+}
+
+.floating-card {
+  animation: float-card 7s ease-in-out infinite;
+}
+
+@keyframes drift {
+  from {
+    transform: rotate(0deg) scale(1);
+  }
+
+  50% {
+    transform: rotate(180deg) scale(1.06);
+  }
+
+  to {
+    transform: rotate(360deg) scale(1);
+  }
+}
+
+@keyframes float-card {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+
+  50% {
+    transform: translateY(-8px);
+  }
+}
+
+/* === GLASS UI === */
+.glass {
+  background: rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+/* === GLOW BUTTON === */
+.glow-btn {
+  background: linear-gradient(135deg, #9333ea, #2563eb);
+  box-shadow: 0 10px 25px rgba(147, 51, 234, 0.4);
+  transition: all 0.3s ease;
+}
+
+.glow-btn:hover {
+  transform: translateY(-2px) scale(1.02);
+  box-shadow: 0 20px 40px rgba(147, 51, 234, 0.6);
+}
+
+/* === CARD DEPTH === */
+.card-3d {
+  box-shadow:
+    0 10px 30px rgba(0,0,0,0.5),
+    inset 0 1px 0 rgba(255,255,255,0.05);
+}
