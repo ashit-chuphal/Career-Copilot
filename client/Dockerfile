@@ -18,7 +18,7 @@ COPY . .
 # Build Vite app
 RUN npm run build
 
-# ---------- PRODUCTION STAGE ----------
+# ---------- PRODUCTION STAGE -----------
 
 FROM nginx:alpine
 
