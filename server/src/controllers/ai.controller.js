@@ -60,3 +60,29 @@ export const getHistory = async (req, res) => {
     res.status(500).json({ error: "Failed to fetch history" });
   }
 };
+
+/* DELETE HISTORY */
+export const deleteAnalysis = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const userEmail = req.user?.email;
+
+    const analysis = await prisma.analysis.findUnique({
+      where: { id },
+    });
+
+    if (!analysis || analysis.userEmail !== userEmail) {
+      return res.status(403).json({ error: "Unauthorized" });
+    }
+
+    await prisma.analysis.delete({
+      where: { id },
+    });
+
+    res.json({ message: "Deleted successfully" });
+
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Delete failed" });
+  }
+};
