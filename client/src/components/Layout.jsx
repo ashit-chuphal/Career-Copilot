@@ -57,7 +57,9 @@ const Layout = ({ children }) => {
             <div className="w-8 h-8 bg-purple-500 rounded-full flex items-center justify-center">
               U
             </div>
-            <span>User</span>
+            <span>
+              {JSON.parse(atob(localStorage.getItem("token").split(".")[1]))?.firstName || "User"}
+            </span>
           </div>
         </div>
 
