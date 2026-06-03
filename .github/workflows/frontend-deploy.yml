@@ -1,11 +1,7 @@
 name: Frontend ECR Push
 
 on:
-  push:
-    branches:
-      - main
-    paths:
-      - "client/**"
+  workflow_dispatch:
 
 jobs:
   build-and-push:
