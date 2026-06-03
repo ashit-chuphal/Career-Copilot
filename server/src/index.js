@@ -18,10 +18,6 @@ dotenv.config({
   path: path.resolve(__dirname, "../.env"),
 });
 
-// Debug check
-console.log("JWT_SECRET:", process.env.JWT_SECRET);
-console.log("CLIENT_URL:", process.env.CLIENT_URL);
-
 // Create Express app
 const app = express();
 
