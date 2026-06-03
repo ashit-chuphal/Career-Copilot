@@ -7,8 +7,16 @@ import prisma from "../config/prisma.js";
 export const googleAuthSuccess = async (req, res) => {
   try {
     if (!req.user) {
-      return res.redirect("http://localhost:5173/login");
+      console.warn("[GOOGLE_AUTH_FAILED] req.user is missing");
+
+      return res.redirect(
+        `${process.env.CLIENT_URL}/login`
+      );
     }
+
+    console.log(
+      `[GOOGLE_AUTH_SUCCESS] ${req.user.email}`
+    );
 
     const token = jwt.sign(
       {
@@ -21,11 +29,17 @@ export const googleAuthSuccess = async (req, res) => {
     );
 
     return res.redirect(
-      `http://localhost:5173/auth/success?token=${token}`
+      `${process.env.CLIENT_URL}/auth/success?token=${token}`
     );
   } catch (error) {
-    console.error("Google Auth Error:", error);
-    return res.redirect("http://localhost:5173/login");
+    console.error(
+      `[GOOGLE_AUTH_ERROR] ${error.message}`
+    );
+    console.error(error.stack);
+
+    return res.redirect(
+      `${process.env.CLIENT_URL}/login`
+    );
   }
 };
 
@@ -33,17 +47,31 @@ export const googleAuthSuccess = async (req, res) => {
 
 export const register = async (req, res) => {
   try {
-    const { firstName, lastName, email, password } = req.body;
+    const { firstName, lastName, email, password } =
+      req.body;
+
+    console.log(
+      `[REGISTER_ATTEMPT] ${email}`
+    );
 
     const existingUser = await prisma.user.findUnique({
       where: { email },
     });
 
     if (existingUser) {
-      return res.status(400).json({ message: "User already exists" });
+      console.warn(
+        `[REGISTER_FAILED] User already exists: ${email}`
+      );
+
+      return res.status(400).json({
+        message: "User already exists",
+      });
     }
 
-    const hashedPassword = await bcrypt.hash(password, 10);
+    const hashedPassword = await bcrypt.hash(
+      password,
+      10
+    );
 
     const user = await prisma.user.create({
       data: {
@@ -55,16 +83,29 @@ export const register = async (req, res) => {
       },
     });
 
+    console.log(
+      `[REGISTER_SUCCESS] ${email}`
+    );
+
     const token = jwt.sign(
       { email: user.email },
       process.env.JWT_SECRET,
       { expiresIn: "7d" }
     );
 
-    return res.status(201).json({ token, user });
+    return res.status(201).json({
+      token,
+      user,
+    });
   } catch (error) {
-    console.error("Register Error:", error);
-    return res.status(500).json({ message: "Registration failed" });
+    console.error(
+      `[REGISTER_ERROR] ${error.message}`
+    );
+    console.error(error.stack);
+
+    return res.status(500).json({
+      message: "Registration failed",
+    });
   }
 };
 
@@ -74,19 +115,42 @@ export const login = async (req, res) => {
   try {
     const { email, password } = req.body;
 
+    console.log(
+      `[LOGIN_ATTEMPT] ${email}`
+    );
+
     const user = await prisma.user.findUnique({
       where: { email },
     });
 
     if (!user || !user.password) {
-      return res.status(400).json({ message: "Invalid credentials" });
+      console.warn(
+        `[LOGIN_FAILED] User not found: ${email}`
+      );
+
+      return res.status(400).json({
+        message: "Invalid credentials",
+      });
     }
 
-    const isMatch = await bcrypt.compare(password, user.password);
+    const isMatch = await bcrypt.compare(
+      password,
+      user.password
+    );
 
     if (!isMatch) {
-      return res.status(400).json({ message: "Invalid credentials" });
+      console.warn(
+        `[LOGIN_FAILED] Invalid password: ${email}`
+      );
+
+      return res.status(400).json({
+        message: "Invalid credentials",
+      });
     }
+
+    console.log(
+      `[LOGIN_SUCCESS] ${email}`
+    );
 
     const token = jwt.sign(
       { email: user.email },
@@ -94,9 +158,18 @@ export const login = async (req, res) => {
       { expiresIn: "7d" }
     );
 
-    return res.status(200).json({ token, user });
+    return res.status(200).json({
+      token,
+      user,
+    });
   } catch (error) {
-    console.error("Login Error:", error);
-    return res.status(500).json({ message: "Login failed" });
+    console.error(
+      `[LOGIN_ERROR] ${error.message}`
+    );
+    console.error(error.stack);
+
+    return res.status(500).json({
+      message: "Login failed",
+    });
   }
 };
