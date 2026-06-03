@@ -1,15 +1,13 @@
-name: Frontend ECR Push
+name: Frontend Deploy
 
 on:
   workflow_dispatch:
 
 jobs:
-  build-and-push:
-
+  deploy:
     runs-on: ubuntu-latest
 
     steps:
-
       - name: Checkout
         uses: actions/checkout@v4
 
@@ -18,16 +16,45 @@ jobs:
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region: ${{ secrets.AWS_REGION }}
+          aws-region: us-east-1
 
       - name: Login to ECR
+        id: login-ecr
         uses: aws-actions/amazon-ecr-login@v2
 
       - name: Build Frontend Image
-        run: docker build -t careercopilot-frontend ./client
+        run: |
+          docker build -t careercopilot-frontend ./client
 
       - name: Tag Frontend Image
-        run: docker tag careercopilot-frontend:latest 670839969318.dkr.ecr.us-east-1.amazonaws.com/careercopilot-frontend:latest
+        run: |
+          docker tag careercopilot-frontend:latest \
+          670839969318.dkr.ecr.us-east-1.amazonaws.com/careercopilot-frontend:${{ github.sha }}
 
       - name: Push Frontend Image
-        run: docker push 670839969318.dkr.ecr.us-east-1.amazonaws.com/careercopilot-frontend:latest
+        run: |
+          docker push \
+          670839969318.dkr.ecr.us-east-1.amazonaws.com/careercopilot-frontend:${{ github.sha }}
+
+      - name: Download Current Task Definition
+        run: |
+          aws ecs describe-task-definition \
+            --task-definition careercopilot-frontend \
+            --query taskDefinition \
+            > task-definition.json
+
+      - name: Render New Task Definition
+        id: task-def
+        uses: aws-actions/amazon-ecs-render-task-definition@v1
+        with:
+          task-definition: task-definition.json
+          container-name: frontend
+          image: 670839969318.dkr.ecr.us-east-1.amazonaws.com/careercopilot-frontend:${{ github.sha }}
+
+      - name: Deploy Frontend Service
+        uses: aws-actions/amazon-ecs-deploy-task-definition@v2
+        with:
+          task-definition: ${{ steps.task-def.outputs.task-definition }}
+          service: careercopilot-frontend-service
+          cluster: CareerCopilotCluster
+          wait-for-service-stability: true

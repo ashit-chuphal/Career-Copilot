@@ -36,6 +36,12 @@ resource "aws_ecs_service" "backend" {
   depends_on = [
     aws_lb_listener.http
   ]
+
+  lifecycle {
+    ignore_changes = [
+      task_definition
+    ]
+  }
 }
 
 # Frontend ECS Service
@@ -76,4 +82,10 @@ resource "aws_ecs_service" "frontend" {
   depends_on = [
     aws_lb_listener.http
   ]
+
+  lifecycle {
+    ignore_changes = [
+      task_definition
+    ]
+  }
 }
