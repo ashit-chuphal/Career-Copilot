@@ -1,5 +1,8 @@
 import { useState } from "react";
 import axios from "axios";
+import.meta.env.VITE_API_URL
+
+const REACT_API_URL = import.meta.env.VITE_API_URL;
 
 const Dashboard = () => {
   const [resume, setResume] = useState(null);
@@ -23,7 +26,7 @@ const Dashboard = () => {
       formData.append("jobDescription", jobDescription);
 
       const res = await axios.post(
-        "http://localhost:5000/api/ai/analyze",
+        `${API_URL}/api/ai/analyze`,
         formData,
         {
           headers: {

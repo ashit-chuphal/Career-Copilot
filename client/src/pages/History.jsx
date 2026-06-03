@@ -1,6 +1,8 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
 
+const REACT_API_URL = import.meta.env.VITE_API_URL;
+
 const History = () => {
   const [history, setHistory] = useState([]);
   const [selected, setSelected] = useState(null);
@@ -15,7 +17,7 @@ const History = () => {
   const fetchHistory = async () => {
     try {
       const res = await axios.get(
-        "http://localhost:5000/api/ai/history",
+        `${REACT_API_URL}/api/ai/history`,
         {
           headers: { Authorization: `Bearer ${token}` },
         }
@@ -32,7 +34,7 @@ const History = () => {
 
     try {
       await axios.delete(
-        `http://localhost:5000/api/ai/${id}`,
+        `${REACT_API_URL}/api/ai/${id}`,
         {
           headers: { Authorization: `Bearer ${token}` },
         }

@@ -3,6 +3,8 @@ import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { FcGoogle } from "react-icons/fc";
 
+const REACT_API_URL = import.meta.env.VITE_API_URL;
+
 const Login = () => {
   const navigate = useNavigate();
 
@@ -23,7 +25,7 @@ const Login = () => {
   };
 
   const handleGoogle = () => {
-    window.location.href = "http://localhost:5000/api/auth/google";
+    window.location.href = "${REACT_API_URL}/api/auth/google";
   };
 
   const handleSubmit = async (e) => {
@@ -32,8 +34,8 @@ const Login = () => {
     try {
       const endpoint =
         activeTab === "signup"
-          ? "http://localhost:5000/api/auth/register"
-          : "http://localhost:5000/api/auth/login";
+          ? "${REACT_API_URL}/api/auth/register"
+          : "${REACT_API_URL}/api/auth/login";
 
       const res = await axios.post(endpoint, formData);
 
