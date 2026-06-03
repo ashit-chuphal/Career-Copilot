@@ -24,7 +24,7 @@ jobs:
         uses: aws-actions/amazon-ecr-login@v2
 
       - name: Build Backend Image
-        run: docker build-t careercopilot-backend ./server
+        run: docker build -t careercopilot-backend ./server
 
       - name: Tag Backend Image
         run: docker tag careercopilot-backend:latest ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/careercopilot-backend:latest
