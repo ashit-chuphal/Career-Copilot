@@ -4,7 +4,7 @@ AI CareerCopilot is a full-stack AI-powered career assistant that analyzes resum
 
 The platform provides actionable career insights through an intuitive SaaS-style dashboard and maintains a history of previous analyses for future reference.
 
-🌐 **Live Application:** https://careercopilot-alb-2135176287.us-east-1.elb.amazonaws.com
+🌐 **Live Application:** https://careercopilotpro.com
 
 ---
 
