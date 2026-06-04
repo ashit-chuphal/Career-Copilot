@@ -1,7 +1,8 @@
 import { useState } from "react";
 import axios from "axios";
 
-const REACT_API_URL = import.meta.env.VITE_API_URL;
+// Use Vite's environment variable for development only
+// const REACT_API_URL = import.meta.env.VITE_API_URL;
 
 const Dashboard = () => {
   const [resume, setResume] = useState(null);
@@ -10,9 +11,6 @@ const Dashboard = () => {
   const [loading, setLoading] = useState(false);
 
   const token = localStorage.getItem("token");
-
-  console.log("Dashboard Token:", token);
-  console.log("API URL:", REACT_API_URL);
 
   const analyze = async () => {
     if (!resume || !jobDescription) {
@@ -28,7 +26,9 @@ const Dashboard = () => {
       formData.append("jobDescription", jobDescription);
 
       const res = await axios.post(
-        `${REACT_API_URL}/api/ai/analyze`,
+        // Use relative URL for development; in production, it will be proxied
+        // `${REACT_API_URL}/api/ai/analyze`,
+        "/api/ai/analyze",
         formData,
         {
           headers: {

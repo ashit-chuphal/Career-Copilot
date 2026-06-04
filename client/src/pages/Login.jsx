@@ -3,7 +3,8 @@ import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { FcGoogle } from "react-icons/fc";
 
-const REACT_API_URL = import.meta.env.VITE_API_URL;
+// Use Vite's environment variable for development only
+// const REACT_API_URL = import.meta.env.VITE_API_URL;
 
 const Login = () => {
   const navigate = useNavigate();
@@ -25,7 +26,9 @@ const Login = () => {
   };
 
   const handleGoogle = () => {
-    window.location.href = `${REACT_API_URL}/api/auth/google`;
+    // In development, this will hit the Vite dev server which proxies to the backend
+    // window.location.href = `${REACT_API_URL}/api/auth/google`,
+    window.location.href = "/api/auth/google";
   };
 
   const handleSubmit = async (e) => {
@@ -34,8 +37,10 @@ const Login = () => {
     try {
       const endpoint =
         activeTab === "signup"
-          ? `${REACT_API_URL}/api/auth/register`
-          : `${REACT_API_URL}/api/auth/login`;
+          ? // `${REACT_API_URL}/api/auth/register`,
+            "/api/auth/register"
+          : // `${REACT_API_URL}/api/auth/login`,
+            "/api/auth/login";
 
       const res = await axios.post(endpoint, formData);
 
