@@ -110,6 +110,13 @@ resource "aws_ecs_task_definition" "frontend" {
         }
       ]
 
+      environment = [
+        {
+          name  = "VITE_API_URL"
+          value = "http://careercopilot-alb-2135176287.us-east-1.elb.amazonaws.com"
+        },
+      ]
+
       logConfiguration = {
         logDriver = "awslogs"
 
