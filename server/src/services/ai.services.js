@@ -18,38 +18,41 @@ const openai = new OpenAI({
 
 export const analyzeRoleFit = async (resumeText, jobDescription) => {
   const prompt = `
-You are an expert ATS system and technical recruiter.
-
-Compare the following resume and job description.
-
-Return ONLY valid JSON.
-
-{
-  "fitScore": number (0-100),
-  "matchingSkills": string[],
-  "missingSkills": string[],
-  "riskFactors": string[],
-  "advice": string,
-  "interviewQuestions": string[]
-}
-
-RULES:
-- Always return valid JSON
-- No explanations outside JSON
-- At least 3 matching + 3 missing skills
-- Fit score must be realistic
-
-RESUME:
-${resumeText}
-
-JOB DESCRIPTION:
-${jobDescription}
-`;
+  You are an expert ATS system and technical recruiter.
+  
+  Compare the following resume and job description.
+  
+  Return ONLY valid JSON.
+  
+  {
+    "fitScore": number (0-100),
+    "matchingSkills": string[],
+    "missingSkills": string[],
+    "riskFactors": string[],
+    "advice": string,
+    "interviewQuestions": string[]
+  }
+  
+  RULES:
+  - Always return valid JSON
+  - No explanations outside JSON
+  - At least 3 matching + 3 missing skills
+  - Fit score must be realistic
+  
+  RESUME:
+  ${resumeText}
+  
+  JOB DESCRIPTION:
+  ${jobDescription}
+  `;
 
   const response = await openai.chat.completions.create({
     model: "gpt-4o-mini",
     messages: [{ role: "user", content: prompt }],
     temperature: 0.3,
+    response_format: {
+      type: "json_object",
+    },
   });
 
   let result;
