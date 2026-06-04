@@ -25,7 +25,7 @@ const Login = () => {
   };
 
   const handleGoogle = () => {
-    window.location.href = "${REACT_API_URL}/api/auth/google";
+    window.location.href = `${REACT_API_URL}/api/auth/google`;
   };
 
   const handleSubmit = async (e) => {
@@ -34,8 +34,8 @@ const Login = () => {
     try {
       const endpoint =
         activeTab === "signup"
-          ? "${REACT_API_URL}/api/auth/register"
-          : "${REACT_API_URL}/api/auth/login";
+          ? `${REACT_API_URL}/api/auth/register`
+          : `${REACT_API_URL}/api/auth/login`;
 
       const res = await axios.post(endpoint, formData);
 

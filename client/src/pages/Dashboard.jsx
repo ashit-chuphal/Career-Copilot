@@ -1,6 +1,5 @@
 import { useState } from "react";
 import axios from "axios";
-import.meta.env.VITE_API_URL
 
 const REACT_API_URL = import.meta.env.VITE_API_URL;
 
@@ -11,6 +10,9 @@ const Dashboard = () => {
   const [loading, setLoading] = useState(false);
 
   const token = localStorage.getItem("token");
+
+  console.log("Dashboard Token:", token);
+  console.log("API URL:", REACT_API_URL);
 
   const analyze = async () => {
     if (!resume || !jobDescription) {
@@ -26,7 +28,7 @@ const Dashboard = () => {
       formData.append("jobDescription", jobDescription);
 
       const res = await axios.post(
-        `${API_URL}/api/ai/analyze`,
+        `${REACT_API_URL}/api/ai/analyze`,
         formData,
         {
           headers: {
@@ -34,8 +36,9 @@ const Dashboard = () => {
           },
         }
       );
-
-      setResult(res.data);
+      // Debug API response
+      console.log("API Response:", res.data);
+      setResult(res.data.data);
     } catch (err) {
       console.error(err);
       alert("Analysis failed");

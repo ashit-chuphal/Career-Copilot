@@ -6,15 +6,23 @@ const AuthSuccess = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    const token = params.get("token");
+  const token = params.get("token");
 
-    if (token) {
-      localStorage.setItem("token", token);
-      navigate("/dashboard");
-    } else {
-      navigate("/login");
-    }
-  }, []);
+  console.log("TOKEN FROM URL:", token);
+
+  if (token) {
+    localStorage.setItem("token", token);
+
+    console.log(
+      "TOKEN IN LOCAL STORAGE:",
+      localStorage.getItem("token")
+    );
+
+    navigate("/dashboard");
+  } else {
+    navigate("/login");
+  }
+}, []);
 
   return <div className="text-white p-10">Logging in...</div>;
 };
