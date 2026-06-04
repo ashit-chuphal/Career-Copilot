@@ -204,12 +204,11 @@ resource "aws_lb_target_group" "backend" {
 # Listener
 ####################################
 
-resource "aws_lb_listener" "http" {
-
+resource "aws_lb_listener" "https" {
+  port              = 443
+  protocol          = "HTTPS"
+  certificate_arn   = "arn:aws:acm:us-east-1:670839969318:certificate/c183a1da-6709-4f0f-995c-ea049e217b38"
   load_balancer_arn = aws_lb.main.arn
-
-  port     = 80
-  protocol = "HTTP"
 
   default_action {
     type             = "forward"
@@ -219,7 +218,7 @@ resource "aws_lb_listener" "http" {
 
 resource "aws_lb_listener_rule" "backend" {
 
-  listener_arn = aws_lb_listener.http.arn
+  listener_arn = aws_lb_listener.https.arn
 
   priority = 100
 

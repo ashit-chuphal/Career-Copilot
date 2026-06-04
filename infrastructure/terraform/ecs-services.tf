@@ -34,7 +34,7 @@ resource "aws_ecs_service" "backend" {
   }
 
   depends_on = [
-    aws_lb_listener.http
+    aws_lb_listener.https
   ]
 
   lifecycle {
@@ -80,7 +80,7 @@ resource "aws_ecs_service" "frontend" {
   }
 
   depends_on = [
-    aws_lb_listener.http
+    aws_lb_listener.https
   ]
 
   lifecycle {
