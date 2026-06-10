@@ -37,11 +37,11 @@ resource "aws_ecs_task_definition" "backend" {
         },
         {
           name  = "CLIENT_URL"
-          value = "http://careercopilot-alb-2135176287.us-east-1.elb.amazonaws.com"
+          value = "https://careercopilot-alb-2135176287.us-east-1.elb.amazonaws.com"
         },
         {
           name  = "GOOGLE_CALLBACK_URL"
-          value = "http://careercopilot-alb-2135176287.us-east-1.elb.amazonaws.com/auth/google/callback"
+          value = "https://careercopilot-alb-2135176287.us-east-1.elb.amazonaws.com/auth/google/callback"
         }
       ]
 
