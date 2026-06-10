@@ -29,7 +29,7 @@ passport.use(
             },
           });
         }
-
+        console.log("GOOGLE STRATEGY START");
         return done(null, user);
       } catch (err) {
         return done(err, null);

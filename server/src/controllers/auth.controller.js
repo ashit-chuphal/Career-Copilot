@@ -7,7 +7,7 @@ import prisma from "../config/prisma.js";
 export const googleAuthSuccess = async (req, res) => {
   try {
     if (!req.user) {
-      console.warn("[GOOGLE_AUTH_FAILED] req.user is missing");
+      console.log("[GOOGLE_AUTH_FAILED] req.user is missing");
 
       return res.redirect(
         `${process.env.CLIENT_URL}/login`
