@@ -32,6 +32,7 @@ passport.use(
         console.log("GOOGLE STRATEGY START");
         return done(null, user);
       } catch (err) {
+        console.error("GOOGLE STRATEGY ENDED WITH ERROR", err);
         return done(err, null);
       }
     }
