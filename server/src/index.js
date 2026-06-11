@@ -21,6 +21,8 @@ dotenv.config({
 // Create Express app
 const app = express();
 
+console.log("CAREER COPILOT DEPLOY TEST 2026");
+
 // CORS
 app.use(
   cors({
@@ -67,6 +69,7 @@ app.get("/", (req, res) => {
 const PORT = process.env.PORT || 5000;
 
 app.listen(PORT, () => {
+  console.log("=== BUILD VERSION GOOGLE TEST ===");
   console.log(`Server running on port ${PORT}`);
 });
 

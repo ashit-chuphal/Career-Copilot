@@ -6,6 +6,9 @@ import prisma from "../config/prisma.js";
 
 export const googleAuthSuccess = async (req, res) => {
   try {
+    console.log("GOOGLE AUTH SUCCESS HANDLER HIT");
+    console.log("REQ.USER =", req.user);
+
     if (!req.user) {
       console.log("[GOOGLE_AUTH_FAILED] req.user is missing");
 

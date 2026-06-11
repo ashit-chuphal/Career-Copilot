@@ -10,6 +10,8 @@ passport.use(
       callbackURL: process.env.GOOGLE_CALLBACK_URL,
     },
     async (accessToken, refreshToken, profile, done) => {
+      console.log("GOOGLE STRATEGY HIT");
+      console.log("PROFILE EMAIL:", profile?.emails?.[0]?.value);
       try {
         const email = profile.emails[0].value;
 
@@ -29,7 +31,7 @@ passport.use(
             },
           });
         }
-        console.log("GOOGLE STRATEGY START");
+        console.log("USER BEFORE DONE:", user);
         return done(null, user);
       } catch (err) {
         console.error("GOOGLE STRATEGY ENDED WITH ERROR", err);
