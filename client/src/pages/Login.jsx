@@ -35,6 +35,26 @@ const Login = () => {
     e.preventDefault();
 
     try {
+
+      if (activeTab === "signup") {
+        if (
+          !formData.firstName.trim() ||
+          !formData.lastName.trim() ||
+          !formData.email.trim() ||
+          !formData.password.trim()
+        ) {
+          alert("All fields are required");
+          return;
+        }
+      }
+
+      if (activeTab === "login") {
+        if (!formData.email.trim() || !formData.password.trim()) {
+          alert("Email and password are required");
+          return;
+        }
+      }
+
       const endpoint =
         activeTab === "signup"
           ? // `${REACT_API_URL}/api/auth/register`,

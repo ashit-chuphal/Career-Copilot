@@ -50,8 +50,13 @@ export const googleAuthSuccess = async (req, res) => {
 
 export const register = async (req, res) => {
   try {
-    const { firstName, lastName, email, password } =
-      req.body;
+    const { firstName, lastName, email, password } = req.body;
+
+    if (!firstName?.trim() || !lastName?.trim() || !email?.trim() || !password?.trim()) {
+      return res.status(400).json({
+        message: "All fields are required",
+      });
+    }
 
     console.log(
       `[REGISTER_ATTEMPT] ${email}`
@@ -117,6 +122,12 @@ export const register = async (req, res) => {
 export const login = async (req, res) => {
   try {
     const { email, password } = req.body;
+
+    if (!email?.trim() || !password?.trim()) {
+      return res.status(400).json({
+        message: "Email and password are required",
+      });
+    }
 
     console.log(
       `[LOGIN_ATTEMPT] ${email}`
