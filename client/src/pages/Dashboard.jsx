@@ -38,7 +38,7 @@ const Dashboard = () => {
       );
       // Debug API response
       console.log("API Response:", res.data);
-      setResult(res.data.data);
+      setResult(res.data);
     } catch (err) {
       console.error(err);
       alert("Analysis failed");
