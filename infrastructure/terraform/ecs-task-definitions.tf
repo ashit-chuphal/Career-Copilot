@@ -41,7 +41,7 @@ resource "aws_ecs_task_definition" "backend" {
         },
         {
           name  = "GOOGLE_CALLBACK_URL"
-          value = "https://careercopilotpro.com/auth/google/callback"
+          value = "https://careercopilotpro.com/api/auth/google/callback"
         }
       ]
 
